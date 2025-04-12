@@ -18,6 +18,8 @@ class GameSprite(sprite.Sprite):
     
     def reset(self):
         window.blit(self.image,(self.rect.x, self.rect.y))
+    def colliderect(self, rect):
+        return self.rect.colliderect(rect)
 class Player(GameSprite):
     def update_l(self):
         keys = key.get_pressed()
@@ -45,19 +47,27 @@ class Ball(GameSprite):
         self.rect.y += self.speed_y
         if self.rect.y < 0 or self.rect.y > 450:
             self.speed_y *= -1
-        if self.rect.x < 0 or self.rect.x > 650:
-            self.speed_x *= -1
+        # if self.rect.x < 0 or self.rect.x > 670:
+        #     self.speed_x *= -1
 
 
-ball = Ball('Ball.jpg', 250, 400, 30, 30, 10)
+ball = Ball('Ball.png', 250, 400, 30, 30, 10)
 
 font.init()
 font2 = font.SysFont('Arial', 36)
 lose = font2.render("YOU LOSE", 1, (255, 255, 255))
 win = font2.render("YOU WIN", 1, (255, 255, 255))
+lose1 = 0 
+lose2 = 0 
+
+
 
 while game:
     window.blit(background, (0, 0))
+    text_lose1 = font2.render('Счёт:' + str(lose1), 1, (255, 255, 255))
+    text_lose2 = font2.render("Счёт:" + str(lose2), 1, (255, 255, 255))
+    window.blit(text_lose1, (10, 60))
+    window.blit(text_lose2, (10, 30))
     player1.update_l()
     player2.update_r()
     player1.reset()
@@ -65,7 +75,21 @@ while game:
     ball.update()
     ball.reset()
 
+    if ball.colliderect(player1.rect):
+        ball.speed_x *= -1 
+    if ball.colliderect(player2.rect):
+        ball.speed_x *= -1
+
+    if ball.rect.x < 10:
+        lose2 += 1 
+        ball.rect.x = 250
+
+    if ball.rect.x > 670:
+        lose1 += 1
+        ball.rect.x = 250
+    
     for e in event.get():
+
         if e.type == QUIT:
             game = False
     clock.tick(FPS)
